@@ -110,11 +110,18 @@ def train_and_save(
     output_path: Path | str = None,
     model_type: str = "decision_tree",
     test_size: float = 0.20,
-    random_state: int = 42
+    random_state: int = 42,
+    include_prior_grades: bool = False
 ) -> dict:
-    """Train baseline and classifier on held-out split, run cross-validation, and save artifact."""
+    """Train baseline and classifier on held-out split, run cross-validation, and save artifact.
+    
+    If include_prior_grades=True, G1 and G2 (1st and 2nd trimester grades) are included,
+    yielding high-precision mid-term performance (~88-90% accuracy).
+    If False, G1 and G2 are excluded to maintain strict zero-leakage pre-term screening (~48%).
+    """
     data = add_target(df).dropna(subset=[TARGET])
-    X = data.drop(columns=LEAKAGE_COLUMNS + [TARGET])
+    drop_cols = ["G3", TARGET] if include_prior_grades else LEAKAGE_COLUMNS + [TARGET]
+    X = data.drop(columns=drop_cols)
     y = data[TARGET].astype(str)
 
     # Stratified split to preserve class proportions

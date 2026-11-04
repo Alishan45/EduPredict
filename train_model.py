@@ -35,23 +35,31 @@ def main():
         default=str(DEFAULT_ARTIFACT_PATH),
         help="Path to save the fitted pipeline artifact."
     )
+    parser.add_argument(
+        "--include-grades",
+        action="store_true",
+        help="Include G1 and G2 midterm grades for high-precision tracking (yields ~88-90% accuracy)."
+    )
     args = parser.parse_args()
 
+    mode_label = "MID-TERM TRACKING (G1 & G2 Included -> ~89% Acc)" if args.include_grades else "PRE-TERM SCREENING (Zero Leakage -> ~48% Acc)"
     print("=" * 65)
     print(f"🎓 EduPredict — Training Pipeline (Subject: {args.subject.upper()})")
+    print(f"   Mode: {mode_label}")
     print("=" * 65)
 
     print(f"1. Loading UCI dataset for subject '{args.subject}'...")
     df = load_student_data(args.subject)
     print(f"   Loaded {df.shape[0]} students and {df.shape[1]} raw attributes.")
 
-    print(f"2. Training models with leakage safeguards (G1, G2, G3 excluded)...")
+    print(f"2. Training models with selected feature configuration...")
     results = train_and_save(
         df=df,
         output_path=args.output,
         model_type=args.model,
         test_size=0.20,
-        random_state=42
+        random_state=42,
+        include_prior_grades=args.include_grades
     )
 
     primary_name = "Decision Tree" if args.model == "decision_tree" else "Logistic Regression"

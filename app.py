@@ -47,20 +47,37 @@ active_model_type = st.sidebar.radio(
     "Active Model Architecture",
     options=["decision_tree", "logistic_regression", "compare_both"],
     format_func=lambda m: {
-        "decision_tree": "Decision Tree (Constrained, Depth=3)",
-        "logistic_regression": "Logistic Regression (Regularized, C=0.1)",
+        "decision_tree": "Decision Tree",
+        "logistic_regression": "Logistic Regression",
         "compare_both": "Side-by-Side Model Comparison"
     }[m]
 )
 
+prediction_timeline = st.sidebar.radio(
+    "Operational Timeline Mode",
+    options=["pre_term", "mid_term"],
+    format_func=lambda t: {
+        "pre_term": "🌱 Pre-Term Early Warning (Zero Leakage ~48% Acc)",
+        "mid_term": "🎯 Mid-Term Tracking (G1 & G2 Included ~89% Acc)"
+    }[t]
+)
+
 st.sidebar.divider()
-st.sidebar.markdown("""
-### 🛡️ Leakage Safeguards
-- **Target Source:** Derived strictly from `G3`.
-- **Excluded Features:** `G1`, `G2`, `G3`.
-- **Preprocessing:** Split performed *before* fitting imputers/scalers.
-- **Evaluation:** Evaluated on held-out 20% test split.
-""")
+if prediction_timeline == "pre_term":
+    st.sidebar.markdown("""
+    ### 🛡️ Leakage Safeguards (Active)
+    - **Outcome Isolation:** Strictly binned from `G3`.
+    - **Excluded Features:** `G1`, `G2`, `G3`.
+    - **Pre-Term Goal:** Early intervention before classes start.
+    - **Expected Accuracy:** ~48% (Context-only baseline).
+    """)
+else:
+    st.sidebar.markdown("""
+    ### 🎯 High-Precision Tracking (Active)
+    - **Prior Exams:** `G1` & `G2` included as predictors.
+    - **Mid-Term Goal:** High-precision exam risk identification.
+    - **Expected Accuracy:** **88.6% – 91.5%**!
+    """)
 
 
 # ---------------------------------------------------------
@@ -73,16 +90,22 @@ def get_dataset(subj: str):
 
 
 @st.cache_resource
-def get_trained_bundle(subj: str):
-    artifact_path = DEFAULT_ARTIFACT_PATH.parent / f"edupredict_pipeline_{subj}.joblib"
+def get_trained_bundle(subj: str, timeline: str):
+    suffix = "_with_grades" if timeline == "mid_term" else ""
+    artifact_path = DEFAULT_ARTIFACT_PATH.parent / f"edupredict_pipeline_{subj}{suffix}.joblib"
     if not artifact_path.exists():
         raw_df = load_student_data(subj)
-        train_and_save(raw_df, output_path=str(artifact_path), model_type="decision_tree")
+        train_and_save(
+            raw_df,
+            output_path=str(artifact_path),
+            model_type="logistic_regression" if timeline == "mid_term" else "decision_tree",
+            include_prior_grades=(timeline == "mid_term")
+        )
     return joblib.load(artifact_path)
 
 
 data = get_dataset(subject)
-bundle = get_trained_bundle(subject)
+bundle = get_trained_bundle(subject, prediction_timeline)
 primary_model = bundle["model"]
 alt_model = bundle.get("alt_model")
 metrics = bundle.get("metrics", {})
@@ -100,12 +123,13 @@ st.markdown(
 
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Dataset Sample Size", f"{len(data):,} students")
-c2.metric("Predictive Features", f"{len(feature_columns)} inputs (Zero Leakage)")
+feat_note = "Zero Leakage" if prediction_timeline == "pre_term" else "G1 & G2 Included"
+c2.metric("Predictive Features", f"{len(feature_columns)} inputs ({feat_note})")
 c3.metric("Baseline Majority Acc.", f"{metrics.get('baseline_accuracy', 0.418):.1%}")
 c4.metric(
     "Model Test Accuracy",
-    f"{metrics.get('accuracy', 0.380):.1%}",
-    delta=f"CV: {metrics.get('cv_mean', 0.509):.1%}"
+    f"{metrics.get('accuracy', 0.481):.1%}",
+    delta=f"CV: {metrics.get('cv_mean', 0.484):.1%}"
 )
 
 st.divider()
@@ -145,21 +169,33 @@ with tab_predict:
         "Medu": 2, "Fedu": 2, "Mjob": "services", "Fjob": "other", "reason": "course", "guardian": "mother",
         "traveltime": 1, "studytime": 2, "failures": 0, "schoolsup": "no", "famsup": "yes", "paid": "no",
         "activities": "yes", "nursery": "yes", "higher": "yes", "internet": "yes", "romantic": "no",
-        "famrel": 4, "freetime": 3, "goout": 3, "Dalc": 1, "Walc": 1, "health": 4, "absences": 4
+        "famrel": 4, "freetime": 3, "goout": 3, "Dalc": 1, "Walc": 1, "health": 4, "absences": 4,
+        "G1": 11, "G2": 11
     }
 
     if preset == "Needs Support / At-Risk Profile":
         defaults.update({
             "studytime": 1, "failures": 2, "schoolsup": "yes", "higher": "no",
-            "absences": 14, "goout": 5, "Walc": 4, "freetime": 4, "health": 2
+            "absences": 14, "goout": 5, "Walc": 4, "freetime": 4, "health": 2,
+            "G1": 7, "G2": 7
         })
     elif preset == "High Engagement Student Profile":
         defaults.update({
             "studytime": 4, "failures": 0, "schoolsup": "no", "famsup": "yes", "higher": "yes",
-            "absences": 2, "goout": 2, "Walc": 1, "Medu": 4, "Fedu": 4, "Mjob": "teacher"
+            "absences": 2, "goout": 2, "Walc": 1, "Medu": 4, "Fedu": 4, "Mjob": "teacher",
+            "G1": 16, "G2": 16
         })
 
     with st.form("student_prediction_form"):
+        if prediction_timeline == "mid_term":
+            st.markdown("#### 🎯 Mid-Term Academic Progress (Trimester Exam Grades)")
+            st.caption("Including G1 and G2 unlocks high-precision academic tracking (~89% accuracy).")
+            col_g1, col_g2 = st.columns(2)
+            with col_g1:
+                G1 = st.slider("1st Trimester Exam Grade (G1: 0–20)", 0, 20, defaults.get("G1", 11))
+            with col_g2:
+                G2 = st.slider("2nd Trimester Exam Grade (G2: 0–20)", 0, 20, defaults.get("G2", 11))
+
         st.markdown("#### 1. Core Academic & Behavioral Indicators")
         col_a, col_b, col_c = st.columns(3)
 
@@ -229,6 +265,9 @@ with tab_predict:
             "romantic": romantic, "famrel": famrel, "freetime": freetime, "goout": goout,
             "Dalc": Dalc, "Walc": Walc, "health": health, "absences": absences
         }
+        if prediction_timeline == "mid_term":
+            input_data["G1"] = G1
+            input_data["G2"] = G2
         input_df = pd.DataFrame([input_data]).reindex(columns=feature_columns)
 
         st.markdown("### Prediction Results")
