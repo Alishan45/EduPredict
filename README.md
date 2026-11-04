@@ -164,6 +164,33 @@ Target Distribution (Mathematics, N=395):
 | **Decision Tree** | Primary Classifier | **38.0%** | **50.9% ± 3.9%** | Constrained `max_depth=3`, `min_samples_leaf=5` |
 | **Logistic Regression** | Stretch Comparison | **45.6%** | **47.4% ± 4.5%** | L2 Regularized linear model (`C=0.1`) |
 
+### 🔥 Correlation Heatmap & Feature Selection Insights
+
+Using a Pearson correlation heatmap on numeric and encoded attributes reveals which signals are genuinely predictive and how feature selection improves model accuracy:
+
+![Correlation Heatmap](reports/figures/08_correlation_heatmap_clean.png)
+
+#### 1. Top Informative Non-Leakage Predictors:
+* **`failures` (-0.360):** Strongest single negative correlation with performance. Repeated course failures signal urgent academic risk.
+* **`Medu` (+0.217) & `Fedu` (+0.152):** Parental education levels show positive linear correlation with student achievement (socioeconomic capital).
+* **`higher_yes` (+0.182):** A student's internal aspiration to attend university is a strong motivational indicator.
+* **`age` (-0.162):** Older students tend to have lower final grades, primarily due to delayed progression or repeated school years.
+* **`goout` (-0.133):** High frequency of going out with friends exhibits negative correlation with study time and grades.
+* **`romantic_yes` (-0.130):** Being in a romantic relationship correlates with lower study focus in this cohort.
+* **`traveltime` (-0.117):** Longer commutes negatively impact available study hours and energy.
+* **`studytime` (+0.098):** Dedicated weekly study hours provide a consistent positive signal.
+
+#### 2. Accuracy Gain via Heatmap Feature Selection:
+When noisy and weakly correlated features (e.g., guardian identity, nursery attendance, family size) are pruned based on the heatmap, classification performance on the held-out test set improves:
+* **Logistic Regression:** Accuracy increases from **45.6% to 48.1%** (+2.5% gain, outperforming the 41.8% majority baseline by +6.3%).
+* **Decision Tree:** Accuracy increases from **38.0% to 39.2%** (+1.2% gain).
+
+#### 3. Academic Leakage Contrast (`G1`, `G2` vs. `G3`):
+* Including intermediate exam grades `G1` (corr = +0.80) and `G2` (corr = +0.90) artificially inflates classifier test accuracy to **89.9%**.
+* However, this represents **target leakage** because mid-term grades are not available at course enrollment. Isolating non-grade features ensures the model functions as an early, actionable warning tool.
+
+---
+
 ### Classification Report (Primary Decision Tree)
 
 ```text

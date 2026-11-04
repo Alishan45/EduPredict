@@ -317,6 +317,44 @@ with tab_eda:
         plt.close(fig_abs)
 
     st.divider()
+    st.markdown("#### 🔥 Feature Correlation Heatmap & Importance Analysis")
+    st.write(
+        "Using a Pearson correlation heatmap allows us to identify features that correlate most strongly with academic performance, "
+        "filtering out noisy indicators to optimize model accuracy while maintaining zero target leakage."
+    )
+
+    heatmap_mode = st.radio(
+        "Heatmap Display Mode",
+        options=["Clean Non-Leakage Features (For Model Training)", "Leakage Comparison (G1, G2 vs G3)"],
+        horizontal=True
+    )
+
+    df_num = pd.get_dummies(data.drop(columns=[TARGET]), drop_first=True)
+    corr = df_num.corr()
+
+    if heatmap_mode.startswith("Clean"):
+        # Drop G1, G2, G3 from features
+        clean_corr = corr.drop(index=["G1", "G2", "G3"], columns=["G1", "G2"])["G3"].abs().sort_values(ascending=False)
+        top_cols = clean_corr.head(12).index.tolist()
+        corr_plot = df_num[top_cols + ["G3"]].corr()
+        fig_hm, ax_hm = plt.subplots(figsize=(10, 7))
+        mask = np.triu(np.ones_like(corr_plot, dtype=bool))
+        sns.heatmap(corr_plot, mask=mask, annot=True, fmt=".2f", cmap="coolwarm", center=0, vmin=-0.4, vmax=0.4, ax=ax_hm, linewidths=0.5)
+        ax_hm.set_title("Correlation Heatmap: Top 12 Clean Predictors vs Final Grade (G3)", fontsize=11, fontweight="bold")
+        st.pyplot(fig_hm)
+        plt.close(fig_hm)
+        st.caption("Notice: Past failures (-0.36), mother's education (+0.22), and higher education desires (+0.18) are top clean drivers.")
+    else:
+        leakage_cols = ["G3", "G2", "G1", "failures", "Medu", "higher_yes", "age", "Fedu", "goout", "studytime"]
+        corr_leak = df_num[leakage_cols].corr()
+        fig_hm, ax_hm = plt.subplots(figsize=(9, 6.5))
+        sns.heatmap(corr_leak, annot=True, fmt=".2f", cmap="vlag", center=0, vmin=-0.4, vmax=1.0, ax=ax_hm, linewidths=0.5)
+        ax_hm.set_title("Leakage Demonstration: G1 (+0.80) & G2 (+0.90) Artificially Dominate G3", fontsize=11, fontweight="bold")
+        st.pyplot(fig_hm)
+        plt.close(fig_hm)
+        st.warning("⚠️ While G1 and G2 have 0.80+ correlation, using them is target leakage because they are future/interim grades not available before courses begin.")
+
+    st.divider()
     st.markdown("#### Raw Dataset Inspection")
     st.dataframe(data.head(20), use_container_width=True)
 
