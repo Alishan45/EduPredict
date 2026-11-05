@@ -56,13 +56,17 @@ ai internship_week_01/
 │   ├── edupredict_pipeline_mat.joblib # Mathematics model artifact
 │   └── edupredict_pipeline_por.joblib # Portuguese model artifact
 └── reports/
-    └── figures/                       # High-resolution visual artifacts for submissions
+    ├── EduPredict_Week02_Documentation.docx # Comprehensive Word documentation submission
+    ├── EduPredict_Week02_Documentation.pdf  # Standalone 17-page PDF technical report
+    └── figures/                             # High-resolution visual artifacts for submissions
         ├── 01_target_distribution.png
         ├── 02_g3_and_absences_eda.png
         ├── 03_studytime_crosstab.png
         ├── 04_confusion_matrix.png
         ├── 05_feature_importances.png
-        └── 06_model_comparison.png
+        ├── 06_model_comparison.png
+        ├── 07_correlation_heatmap_all.png
+        └── 08_correlation_heatmap_clean.png
 ```
 
 ---
