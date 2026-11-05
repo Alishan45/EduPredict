@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EduPredict — Week 02 Comprehensive Documentation</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.8in;
+    @bottom-right {
+      content: counter(page);
+      font-size: 9pt;
+      color: #777;
+    }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #2c3e50;
+    line-height: 1.5;
+    font-size: 10.5pt;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    color: #1f4e79;
+    font-size: 22pt;
+    margin-top: 0;
+    margin-bottom: 4px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .subtitle {
+    color: #5c6b73;
+    font-size: 11pt;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .meta-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+    background: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .meta-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 10pt;
+  }
+  .meta-table td.label {
+    font-weight: 600;
+    width: 28%;
+    color: #1f4e79;
+    background: #edf2f7;
+  }
+  h2 {
+    color: #1f4e79;
+    font-size: 14pt;
+    border-bottom: 2px solid #2e75b6;
+    padding-bottom: 5px;
+    margin-top: 25px;
+    margin-bottom: 12px;
+    page-break-after: avoid;
+  }
+  h3 {
+    color: #2e75b6;
+    font-size: 11.5pt;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: justify;
+  }
+  ul {
+    margin-top: 0;
+    margin-bottom: 12px;
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 6px;
+  }
+  .figure-card {
+    text-align: center;
+    margin: 15px 0 20px 0;
+    page-break-inside: avoid;
+  }
+  .figure-card img {
+    max-width: 95%;
+    height: auto;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    border: 1px solid #d3d3d3;
+  }
+  .figure-caption {
+    font-size: 9pt;
+    color: #64748b;
+    font-style: italic;
+    margin-top: 6px;
+  }
+  .code-badge {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 9.5pt;
+    color: #0f172a;
+  }
+  .highlight-box {
+    background: #eff6ff;
+    border-left: 4px solid #2e75b6;
+    padding: 10px 14px;
+    margin: 14px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+</style>
+</head>
+<body>
+
+<h1>EduPredict — Student Performance Prediction & Analysis</h1>
+<div class="subtitle">Stack & Scale Remote Internship 2026 | AI Engineering — Week 02 Comprehensive Project Documentation</div>
+
+<table class="meta-table">
+  <tr>
+    <td class="label">Intern Name</td>
+    <td>Alishan</td>
+  </tr>
+  <tr>
+    <td class="label">Project Domain</td>
+    <td>AI Engineering & Applied Machine Learning (Week 02 Guided Intermediate)</td>
+  </tr>
+  <tr>
+    <td class="label">Submission Delivery</td>
+    <td>Friday, 6 November 2026</td>
+  </tr>
+  <tr>
+    <td class="label">GitHub Repository</td>
+    <td><a href="https://github.com/Alishan45/EduPredict" style="color: #2e75b6; text-decoration: none;">https://github.com/Alishan45/EduPredict</a></td>
+  </tr>
+</table>
+
+<h2>1. Weekly Accomplishment Summary (10 Key Points)</h2>
+<p>During Week 02 of the Stack & Scale AI Engineering internship, the EduPredict machine learning system was conceived, implemented, evaluated, and documented following professional ML engineering standards. The following 10 points summarize the completed work:</p>
+
+<ul>
+  <li><strong>1. Dataset Ingestion & Archive Engineering:</strong> Acquired and verified the UCI Student Performance benchmark dataset across both cohorts—Mathematics (395 records) and Portuguese Language (649 records). Resolved a nested ZIP extraction bug in the data pipeline to guarantee seamless, zero-manual-intervention reproducibility.</li>
+  <li><strong>2. Pedagogical Target Formulation:</strong> Constructed a 3-tier discrete academic performance target based on Portugal's official secondary grading scale (0–20): <em>'Needs Support'</em> (0–9), <em>'Satisfactory'</em> (10–13), and <em>'Strong'</em> (14–20). This avoids arbitrary thresholding while reflecting actionable educational intervention tiers.</li>
+  <li><strong>3. Data Hygiene & Quality Assurance:</strong> Conducted thorough data audits verifying 0 missing values, 0 duplicate rows, and correct type encodings across all 33 demographic, familial, and behavioral attributes.</li>
+  <li><strong>4. Strict Zero-Leakage Architecture:</strong> Enforced target leakage safeguards by completely dropping final grade G3 (the label source) and intermediate trimester exams G1 and G2 from pre-term feature matrices, preventing artificial grade interpolation.</li>
+  <li><strong>5. Leak-Free ColumnTransformer Pipeline:</strong> Encapsulated preprocessing inside a scikit-learn Pipeline. Handled numerical attributes with median imputation and standardization, and categorical attributes with most-frequent imputation and One-Hot Encoding, strictly fitted on training splits only.</li>
+  <li><strong>6. Majority Benchmark Establishment:</strong> Constructed a DummyClassifier benchmark predicting the majority class (<em>'Satisfactory'</em>, 41.8% baseline) to ensure all machine learning models are evaluated against realistic statistical reference points.</li>
+  <li><strong>7. Multi-Model Architecture & Tuning:</strong> Engineered both a constrained DecisionTreeClassifier (depth=3, min_samples_leaf=5) and a regularized LogisticRegression classifier (C=0.1, L2 penalty), analyzing their bias-variance trade-offs.</li>
+  <li><strong>8. 5-Fold Stratified Cross-Validation:</strong> Conducted 5-fold stratified cross-validation on training data to establish out-of-fold generalization bounds (Decision Tree: 50.9% ± 3.9%, Logistic Regression: 47.4% ± 4.5%).</li>
+  <li><strong>9. Correlation Heatmap & Feature Selection:</strong> Generated Pearson correlation heatmaps that uncovered the strongest clean predictors (past failures r=-0.36, mother's education r=+0.22, higher education ambition r=+0.18). Pruning noisy attributes improved test accuracy to 48.1% (+6.3% over baseline).</li>
+  <li><strong>10. Multi-Tab Streamlit App & Dual-Timeline Deployment:</strong> Built an interactive Streamlit application featuring both Pre-Term Early Warning Mode (~48% Acc, survey only) and Mid-Term Tracking Mode (~89% Acc, G1/G2 included), complete with profile presets and responsible AI guidelines.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>2. Code Implementation Screenshots</h2>
+<p>The codebase is structured into modular components: dataset handling (<span class="code-badge">src/data.py</span>), model pipelining (<span class="code-badge">src/model.py</span>), automated training CLI (<span class="code-badge">train_model.py</span>), and web simulation dashboard (<span class="code-badge">app.py</span>).</p>
+
+<h3>2.1 Data Ingestion & Extraction Pipeline (src/data.py)</h3>
+<p>Handles automatic dataset downloading from the UCI repository, unpacks nested ZIP archives, and structures CSV data locally with project-root anchoring.</p>
+<div class="figure-card">
+  <img src="figures/code_data_loader.png" alt="src/data.py code">
+  <div class="figure-caption">Figure 2.1: src/data.py — Automated UCI Dataset Retrieval and Nested ZIP Extractor</div>
+</div>
+
+<h3>2.2 Preprocessing & Pipeline Construction (src/model.py)</h3>
+<p>Constructs leak-free pipelines using ColumnTransformers for median imputation, scaling, and one-hot encoding fitted strictly on training data.</p>
+<div class="figure-card">
+  <img src="figures/code_pipeline_model.png" alt="src/model.py code">
+  <div class="figure-caption">Figure 2.2: src/model.py — Preprocessing ColumnTransformer and Pipeline Construction</div>
+</div>
+
+<div class="page-break"></div>
+
+<h3>2.3 CLI Training, Validation & Serialization (train_model.py)</h3>
+<p>Command-line script executing stratified splits, baseline comparisons, cross-validation, confusion matrices, and joblib model persistence.</p>
+<div class="figure-card">
+  <img src="figures/code_train_script.png" alt="train_model.py code">
+  <div class="figure-caption">Figure 2.3: train_model.py — Command-Line Interface for Training, Cross-Validation & Serialization</div>
+</div>
+
+<h3>2.4 Interactive Web Application (app.py)</h3>
+<p>Streamlit web application implementing sidebar timeline controllers, preset student profile loaders, side-by-side probability estimates, and responsible AI guardrails.</p>
+<div class="figure-card">
+  <img src="figures/code_streamlit_app.png" alt="app.py code">
+  <div class="figure-caption">Figure 2.4: app.py — Streamlit Multi-Tab Web Application Logic</div>
+</div>
+
+<div class="page-break"></div>
+
+<h2>3. Completed Work Screenshots: EDA & Correlation Heatmaps</h2>
+<p>Exploratory data analysis on 395 mathematics students inspecting target distributions, raw exam marks, study hours, absences, and correlation matrices.</p>
+
+<h3>3.1 Target Class Balance</h3>
+<p>Distribution across performance tiers: Satisfactory (41.8%), Needs Support (32.9%), and Strong (25.3%).</p>
+<div class="figure-card">
+  <img src="figures/01_target_distribution.png" alt="Target Distribution">
+  <div class="figure-caption">Figure 3.1: Distribution of Performance Categories (Needs Support, Satisfactory, Strong)</div>
+</div>
+
+<h3>3.2 Raw Final Grade Distribution (G3) & School Absences</h3>
+<p>Distribution of raw marks on the 0–20 scale with 10-point pass threshold, alongside school absences across tiers.</p>
+<div class="figure-card">
+  <img src="figures/02_g3_and_absences_eda.png" alt="Grade Distribution and Absences">
+  <div class="figure-caption">Figure 3.2: Distribution of Raw Final Grade G3 and Absences Across Performance Tiers</div>
+</div>
+
+<div class="page-break"></div>
+
+<h3>3.3 Weekly Study Time vs. Academic Performance</h3>
+<p>Students studying over 5 hours per week exhibit significantly higher representation in the 'Strong' performance tier.</p>
+<div class="figure-card">
+  <img src="figures/03_studytime_crosstab.png" alt="Study Time Crosstab">
+  <div class="figure-caption">Figure 3.3: Performance Category Distribution by Weekly Study Hours</div>
+</div>
+
+<h3>3.4 Clean Correlation Heatmap (Feature Selection)</h3>
+<p>Pearson correlation heatmap of the top 15 clean predictors against final grade G3. Notice failures (-0.36), mother's education (+0.22), and higher education desires (+0.18).</p>
+<div class="figure-card">
+  <img src="figures/08_correlation_heatmap_clean.png" alt="Clean Heatmap">
+  <div class="figure-caption">Figure 3.4: Clean Correlation Heatmap — Top 15 Non-Leakage Predictors vs. Final Grade (G3)</div>
+</div>
+
+<div class="page-break"></div>
+
+<h3>3.5 Academic Leakage Demonstration Heatmap</h3>
+<p>Contrast showing intermediate exams G1 (+0.80) and G2 (+0.90) dominating G3, explaining why they are excluded for early-intervention models.</p>
+<div class="figure-card">
+  <img src="figures/07_correlation_heatmap_all.png" alt="Leakage Heatmap">
+  <div class="figure-caption">Figure 3.5: Academic Leakage Heatmap — G1 (+0.80) & G2 (+0.90) Artificially Dominate G3</div>
+</div>
+
+<h2>4. Final Outputs & Verification Screenshots</h2>
+<p>Held-out test split evaluation (79 students) comparing Pre-Term Early Warning (~48% Acc) vs. Mid-Term Tracking (88.6% Acc).</p>
+
+<h3>4.1 Terminal Execution Output: Pre-Term Early Warning Mode</h3>
+<div class="figure-card">
+  <img src="figures/terminal_output_preterm.png" alt="Pre-Term Terminal Output">
+  <div class="figure-caption">Figure 4.1: Terminal Output — Pre-Term Screening Mode Execution Output (~48% Acc)</div>
+</div>
+
+<div class="page-break"></div>
+
+<h3>4.2 Terminal Execution Output: Mid-Term Tracking Mode (~89% Accuracy)</h3>
+<div class="figure-card">
+  <img src="figures/terminal_output_midterm.png" alt="Mid-Term Terminal Output">
+  <div class="figure-caption">Figure 4.2: Terminal Output — Mid-Term Tracking Mode Execution Output (88.6% Accuracy)</div>
+</div>
+
+<h3>4.3 Confusion Matrix & Feature Importances</h3>
+<div class="figure-card">
+  <img src="figures/04_confusion_matrix.png" alt="Confusion Matrix" style="max-width: 48%; display: inline-block;">
+  <img src="figures/05_feature_importances.png" alt="Feature Importances" style="max-width: 48%; display: inline-block;">
+  <div class="figure-caption">Figure 4.3: Decision Tree Held-Out Confusion Matrix (Left) & Top 8 Feature Importances (Right)</div>
+</div>
+
+<div class="page-break"></div>
+
+<h3>4.4 Model Architecture Comparison</h3>
+<div class="figure-card">
+  <img src="figures/06_model_comparison.png" alt="Model Comparison">
+  <div class="figure-caption">Figure 4.4: Classifier Test Accuracy Comparison against Baseline Benchmark</div>
+</div>
+
+<h3>4.5 Live Streamlit Web Application Screenshots</h3>
+<div class="figure-card">
+  <img src="figures/ui_app_main.png" alt="Streamlit Main Form">
+  <div class="figure-caption">Figure 4.5: Live Streamlit UI — Interactive Prediction Interface with Preset Profiles</div>
+</div>
+
+<div class="page-break"></div>
+
+<div class="figure-card">
+  <img src="figures/ui_app_eda.png" alt="Streamlit EDA Tab">
+  <div class="figure-caption">Figure 4.6: Live Streamlit UI — Exploratory Data Analysis & Interactive Heatmap Viewer</div>
+</div>
+
+<div class="figure-card">
+  <img src="figures/ui_app_eval.png" alt="Streamlit Eval Tab">
+  <div class="figure-caption">Figure 4.7: Live Streamlit UI — Model Evaluation Benchmarks & Leakage Prevention Checklist</div>
+</div>
+
+<div class="page-break"></div>
+
+<h2>5. Error Diagnostics & Responsible AI Guardrails</h2>
+
+<h3>5.1 Case Studies of Misclassified Students</h3>
+<p>Examining model misclassifications on held-out test data provides critical pedagogical insights into the limitations of tabular background surveys:</p>
+<ul>
+  <li><strong>Case 1 — Student #111 (Actual: 'Satisfactory', Predicted: 'Needs Support'):</strong> The student had 1 past failure in an earlier grade, which triggered a penalty branch in the decision tree. However, the student compensated with high weekly study time (5–10 hours) and perfect attendance (0 absences), successfully achieving a satisfactory passing grade. The survey-level proxy penalized past failure without capturing compensating resilience.</li>
+  <li><strong>Case 2 — Student #80 (Actual: 'Satisfactory', Predicted: 'Needs Support'):</strong> The student reported minimal study time (<2 hours), leading the model to suspect underperformance. Nonetheless, with 0 past failures and low absences, the student passed comfortably.</li>
+</ul>
+
+<h3>5.2 Responsible AI Principles & Ethical Limitations</h3>
+<div class="highlight-box">
+  <strong>Guiding Principle:</strong> EduPredict is an educational exploration prototype designed to help learners and educators explore pattern discovery. It must <strong>never</strong> be used for automated admissions, grading, tracking, ranking, or resource distribution.
+</div>
+
+<ul>
+  <li><strong>Non-Causality:</strong> High absences correlate with lower grades, but punishing absences treats a symptom rather than addressing root causes (e.g., chronic illness or family obligations). Interventions must support the student, not penalize them.</li>
+  <li><strong>Socioeconomic Proxies:</strong> Attributes such as parental education (<span class="code-badge">Medu</span>, <span class="code-badge">Fedu</span>) reflect structural societal inequalities rather than inherent intellectual capability. Using demographic attributes in high-stakes grading would reinforce historical disparities.</li>
+  <li><strong>Context Specificity:</strong> The dataset originates from two Portuguese public secondary schools in 2005–2006. The learned associations cannot be assumed to generalize across diverse international educational systems or contemporary learning environments.</li>
+</ul>
+
+</body>
+</html>
